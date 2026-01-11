@@ -32,12 +32,19 @@ app.use((req, res) => {
 // Error handler (so AppError works)
 app.use((err, req, res, next) => {
   const statusCode = err?.statusCode || 500;
-  const message = statusCode === 500 ? "Internal Server Error" : err.message;
 
-  // Log full error for debugging in terminal
+  const message =
+    statusCode === 500
+      ? "Internal Server Error"
+      : err?.message || "Something went wrong";
+
   console.error(err);
 
-  res.status(statusCode).json({ message });
+  res.status(statusCode).json({
+    status: "error",
+    message,
+    data: null, // optional
+  });
 });
 
 const port = Number(process.env.PORT || 8080);
