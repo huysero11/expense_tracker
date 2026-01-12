@@ -1,16 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "../../../utils/axiosInstance";
+import authApi from "../../apis/authApi";
 
 export const registerThunk = createAsyncThunk(
   "auth/register",
   async ({ email, password, fullName }, { rejectWithValue }) => {
     try {
       // If your axiosInstance already returns res.data, "res" is the data.
-      const res = await axiosInstance.post("/auth/register", {
-        email,
-        password,
-        fullName,
-      });
+      const res = await authApi.register({ email, password, fullName });
+
       return res;
     } catch (err) {
       const message =
