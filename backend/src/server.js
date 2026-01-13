@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import cookieParser from "cookie-parser";
 
 import { testDbConnection } from "./config/db.js";
 import routes from "./routes/index.js";
@@ -14,7 +15,11 @@ const app = express();
  * - express.json(): parse JSON body -> req.body
  * - morgan(): log requests to terminal
  */
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+  credentials: true,
+}));
+app.use(cookieParser());
 app.use(express.json());
 app.use(morgan("dev"));
 

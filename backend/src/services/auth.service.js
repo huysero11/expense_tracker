@@ -1,4 +1,5 @@
 import * as userModel from "../models/user.model.js";
+import * as refreshTokenService from "./refreshToken.service.js";
 import { hashPassword, comparePassword } from "../utils/password.util.js";
 import { AppError } from "../utils/AppError.js";
 import { signAccessToken } from "../utils/jwt.util.js";
@@ -34,13 +35,30 @@ export async function login({ email, password }) {
 
   /* Sign JWT */
   const accessToken = signAccessToken(user.id);
+  const refreshToken = await refreshTokenService.issueRefreshToken(user.id);
 
   return {
     accessToken,
+    refreshToken,
     user: {
       id: user.id,
       email: user.email,
       fullName: user.fullName,
     },
   };
+}
+
+export async function refresh({ refreshToken }) {
+  const { userId, newRefreshToken } =
+    await refreshTokenService.rotateRefreshToken(refreshToken);
+  const accessToken = signAccessToken(userId);
+
+  return {
+    accessToken,
+    refreshToken: newRefreshToken,
+  };
+}
+
+export async function logout({ refreshToken }) {
+  await refreshTokenService.revokeRefreshToken(refreshToken);
 }
