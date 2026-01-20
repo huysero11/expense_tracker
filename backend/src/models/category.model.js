@@ -11,3 +11,21 @@ export async function createCategory({ userId, name, type }) {
     type,
   };
 }
+
+export async function getCategories(userId, type) {
+  if (type) {
+    const sql = `SELECT id, user_id AS userId, name, type 
+                FROM categories 
+                WHERE user_id = ? AND type = ? 
+                ORDER BY type ASC, name ASC`;
+    const [rows] = await pool.execute(sql, [userId, type]);
+    return rows;
+  } else {
+    const sql = `SELECT id, user_id AS userId, name, type 
+                FROM categories 
+                WHERE user_id = ? 
+                ORDER BY type ASC, name ASC`;
+    const [rows] = await pool.execute(sql, [userId]);
+    return rows;
+  }
+}

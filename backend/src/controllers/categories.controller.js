@@ -22,3 +22,24 @@ export async function createCategory(req, res, next) {
     next(error);
   }
 }
+
+export async function getCategories(req, res, next) {
+  try {
+    const userId = req.user?.userId;
+    const type = req.query?.type;
+    const categories = await categoriesService.getCategories({
+      userId,
+      type,
+    }); // [{id, userId, name, type}, ...]
+
+    return res.status(200).json({
+      status: "success",
+      message: "Categories retrieved successfully",
+      data: {
+        categories,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}

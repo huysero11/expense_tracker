@@ -45,3 +45,19 @@ export async function createCategory({ userId, name, type }) {
     }
   }
 }
+
+export async function getCategories({ userId, type }) {
+  if (!userId) {
+    throw new AppError("User ID is required", 400);
+  }
+
+  if (type && !isValidType(type)) {
+    throw new AppError(
+      "Category type must be either 'expense' or 'income'",
+      400,
+    );
+  }
+
+  const categories = await categoryModel.getCategories(userId, type);
+  return categories;
+}
