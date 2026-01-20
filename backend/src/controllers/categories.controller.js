@@ -43,3 +43,26 @@ export async function getCategories(req, res, next) {
     next(error);
   }
 }
+
+export async function updateCategory(req, res, next) {
+  try {
+    const userId = req.user?.userId;
+    const id = req.params.id;
+    const { name, type } = req.body;
+
+    const updatedCategory = await categoriesService.updateCategory({
+      userId,
+      id,
+      name,
+      type,
+    });
+
+    return res.status(200).json({
+      status: "success",
+      message: "Category updated successfully!",
+      data: { updatedCategory },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
