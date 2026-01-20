@@ -32,3 +32,56 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
     ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS categories (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  type ENUM('expense', 'income') NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (id),
+
+  -- cùng user + cùng name + cùng type chỉ được 1 dòng
+  UNIQUE KEY uq_categories_user_name_type (user_id, name, type),
+
+  KEY idx_categories_user_id (user_id),
+  KEY idx_categories_user_type (user_id, type),
+
+  CONSTRAINT fk_categories_user
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+
+CREATE TABLE IF NOT EXISTS transactions (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL,
+  category_id BIGINT UNSIGNED NOT NULL,
+  type ENUM('expense', 'income') NOT NULL,
+  amount BIGINT UNSIGNED NOT NULL,
+  trans_date DATE NOT NULL,
+  note VARCHAR(255) NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ON UPDATE CURRENT_TIMESTAMP,
+
+  PRIMARY KEY (id),
+
+  KEY idx_transactions_user_date (user_id, trans_date),
+  KEY idx_transactions_user_category (user_id, category_id),
+  KEY idx_transactions_user_type_date (user_id, type, trans_date),
+
+  CONSTRAINT fk_transactions_user
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE,
+
+  -- không cho xoá category nếu đang được dùng
+  CONSTRAINT fk_transactions_category
+    FOREIGN KEY (category_id)
+    REFERENCES categories(id)
+    ON DELETE RESTRICT
+) ENGINE=InnoDB;
