@@ -110,3 +110,44 @@ export async function updateCategory({ userId, id, name, type }) {
     throw err;
   }
 }
+
+export async function deleteCategory({ userId, id }) {
+  if (!userId) {
+    throw new AppError("Unauthorized", 401);
+  }
+
+  const categoryId = Number(id);
+  if (!categoryId) {
+    throw new AppError("Category id is invalid", 400);
+  }
+
+  const existing = await categoryModel.getCategoryById(categoryId);
+  if (!existing) {
+    throw new AppError("Category not found", 404);
+  }
+  if (Number(existing.userId) !== Number(userId)) {
+    throw new AppError("Category not found", 404);
+  }
+
+  try {
+    const ok = await categoryModel.deleteCategory({
+      id: categoryId,
+      userId,
+    });
+
+    if (!ok) {
+      throw new AppError("Category not found", 404);
+    }
+
+    return true;
+  } catch (error) {
+    // MySQL throws this when parent row is referenced (ON DELETE RESTRICT)
+    if (error?.code === "ER_ROW_IS_REFERENCED_2") {
+      throw new AppError(
+        "Cannot delete category because it is used by transactions",
+        409,
+      );
+    }
+    throw error;
+  }
+}

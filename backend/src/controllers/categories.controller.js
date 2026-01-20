@@ -66,3 +66,21 @@ export async function updateCategory(req, res, next) {
     next(error);
   }
 }
+
+export async function deleteCategory(req, res, next) {
+  try {
+    const userId = req.user?.userId;
+    const id = req.params?.id;
+
+    await categoriesService.deleteCategory({ userId, id });
+    return res.status(200).json({
+      status: "success",
+      message: "Category deleted successfully!",
+      data: {
+        deleted: true,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+}

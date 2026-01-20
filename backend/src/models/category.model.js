@@ -46,3 +46,10 @@ export async function updateCategory({ id, userId, name, type }) {
   const [result] = await pool.execute(sql, [name, type, id, userId]);
   return result.affectedRows > 0;
 }
+
+export async function deleteCategory({ id, userId }) {
+  const sql = `DELETE FROM categories
+                WHERE id = ? AND user_id = ?`;
+  const [results] = await pool.execute(sql, [id, userId]);
+  return results.affectedRows > 0;
+}
