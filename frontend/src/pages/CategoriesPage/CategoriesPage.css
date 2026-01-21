@@ -1,0 +1,11 @@
+.category-page__container {
+  height: 100%;
+  box-sizing: border-box;
+  padding: var(--padding-1);
+  background-color: rgb(209, 209, 209);
+}
+
+.category-page__title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+}

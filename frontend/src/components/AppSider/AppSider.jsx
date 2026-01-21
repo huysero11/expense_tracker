@@ -29,7 +29,7 @@ const AppSider = () => {
   const navigate = useNavigate();
   const handleMenuClick = (e) => {
     const { key } = e;
-    navigate(`/${key}`);
+    navigate(`/app/${key}`);
   };
 
   return (

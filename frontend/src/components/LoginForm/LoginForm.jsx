@@ -1,10 +1,21 @@
 import { Form, Input, Button } from "antd";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginThunk } from "../../redux/slices/authSlice";
+import { selectAuthToken } from "../../redux/selectors/authSelector";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./LoginForm.css";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const token = useSelector(selectAuthToken);
+
+  useEffect(() => {
+    if (token) {
+      navigate("/app/dashboard", { replace: true });
+    }
+  }, [token, navigate]);
 
   const hanldeLogin = (values) => {
     // console.log("Login form values:", values);
