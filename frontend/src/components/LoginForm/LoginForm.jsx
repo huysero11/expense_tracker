@@ -1,4 +1,4 @@
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, message } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { loginThunk } from "../../redux/slices/authSlice";
 import { selectAuthToken } from "../../redux/selectors/authSelector";
@@ -11,20 +11,25 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const token = useSelector(selectAuthToken);
 
-  useEffect(() => {
-    if (token) {
-      navigate("/app/dashboard", { replace: true });
-    }
-  }, [token, navigate]);
+  // useEffect(() => {
+  //   if (token) {
+  //     navigate("/app/dashboard", { replace: true });
+  //   }
+  // }, [token, navigate]);
 
-  const hanldeLogin = (values) => {
+  const hanldeLogin = async (values) => {
     // console.log("Login form values:", values);
     const payload = {
       email: values.email,
       password: values.password,
     };
 
-    dispatch(loginThunk(payload));
+    try {
+      await dispatch(loginThunk(payload)).unwrap();
+      navigate("/app/dashboard");
+    } catch (e) {
+      message.error(e);
+    }
   };
 
   return (

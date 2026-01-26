@@ -3,6 +3,7 @@ import { useEffect } from "react";
 
 const CategoryFormModal = ({ open, initialValues, onCancel, onSubmit }) => {
   const [form] = Form.useForm();
+  const isEdit = Boolean(initialValues?.id);
 
   useEffect(() => {
     if (!open) {
@@ -31,12 +32,11 @@ const CategoryFormModal = ({ open, initialValues, onCancel, onSubmit }) => {
 
   return (
     <Modal
-      title="Edit category"
+      title={isEdit ? "Edit category" : "Create category"}
       open={open}
       onCancel={onCancel}
       onOk={handleOk}
       okText="Save"
-      destroyOnHidden
     >
       <Form layout="vertical" form={form}>
         <Form.Item

@@ -1,21 +1,43 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import CategoryToolbar from "../../components/categories/CategoryToolbar/CategoryToolbar";
 import CategoryTable from "../../components/categories/CategoryTable/CategoryTable";
 import CategoryFormModal from "../../components/categories/CategoryFormModal/CategoryFormModal";
+
+import { useDispatch, useSelector } from "react-redux";
+import { message } from "antd";
+
+import {
+  getCategoriesThunk,
+  createCategoryThunk,
+  updateCategoryThunk,
+  deleteCategoryThunk,
+} from "../../redux/slices/categoriesSlice";
+
+import {
+  selectCategoriesItems,
+  selectCategoriesStatus,
+  selectCategoriesError,
+} from "../../redux/selectors/categoriesSelector";
 
 import "./CategoriesPage.css";
 
 const normalize = (s = "") => s.trim().toLowerCase();
 
 // Mock data for UI testing
-const mockCategories = [
-  { id: 1, name: "Food", type: "expense" },
-  { id: 2, name: "Salary", type: "income" },
-  { id: 3, name: "Transport", type: "expense" },
-  { id: 4, name: "Freelance", type: "income" },
-];
+// const mockCategories = [
+//   { id: 1, name: "Food", type: "expense" },
+//   { id: 2, name: "Salary", type: "income" },
+//   { id: 3, name: "Transport", type: "expense" },
+//   { id: 4, name: "Freelance", type: "income" },
+// ];
 
 const CategoriesPage = () => {
+  const dispatch = useDispatch();
+
+  const items = useSelector(selectCategoriesItems);
+  const status = useSelector(selectCategoriesStatus);
+  const error = useSelector(selectCategoriesError);
+
   const [ui, setUi] = useState({
     filterType: "all",
     sortOrder: "asc",
@@ -23,8 +45,18 @@ const CategoriesPage = () => {
     editingCategory: null,
   });
 
+  useEffect(() => {
+    dispatch(getCategoriesThunk());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (status == "failed" && error) {
+      message.error(error);
+    }
+  }, [status, error]);
+
   const visibleCategories = useMemo(() => {
-    let list = mockCategories;
+    let list = items;
 
     if (ui.filterType !== "all") {
       list = list.filter((c) => c.type === ui.filterType);
@@ -39,7 +71,7 @@ const CategoriesPage = () => {
     });
 
     return list;
-  }, [ui.filterType, ui.sortOrder]);
+  }, [items, ui.filterType, ui.sortOrder]);
 
   /**
    * for Toolbar
@@ -71,7 +103,7 @@ const CategoriesPage = () => {
    * category is a row of the table = {id, name, type..}
    */
   const handleEdit = (category) => {
-    console.log("Edit, category = ", category);
+    // console.log("Edit, category = ", category);
     setUi((prev) => ({ ...prev, modalOpen: true, editingCategory: category }));
   };
 
@@ -79,8 +111,14 @@ const CategoriesPage = () => {
    * for table
    * id is the id field of a row
    */
-  const handleDelete = (id) => {
-    console.log("Delete, id = ", id);
+  const handleDelete = async (id) => {
+    // console.log("Delete, id = ", id);
+    try {
+      await dispatch(deleteCategoryThunk(id)).unwrap();
+      message.success("Delete category successfully!");
+    } catch (err) {
+      message.error(err || "Failed to delete!");
+    }
   };
 
   /**
@@ -93,17 +131,21 @@ const CategoriesPage = () => {
   /**
    * for modal
    */
-  const handleModalSubmit = (values) => {
-    // TEMP: just log; later connect to Redux thunks
-    console.log("Submit values:", values);
-
-    if (ui.editingCategory?.id) {
-      console.log("Updating id:", ui.editingCategory.id);
-    } else {
-      console.log("Creating new category");
+  const handleModalSubmit = async (values) => {
+    try {
+      if (ui.editingCategory?.id != null) {
+        await dispatch(
+          updateCategoryThunk({ id: ui.editingCategory.id, ...values }),
+        ).unwrap();
+        message.success("Category updated successfully.");
+      } else {
+        await dispatch(createCategoryThunk(values)).unwrap();
+        message.success("Create category successfully!");
+      }
+      setUi((prev) => ({ ...prev, modalOpen: false, editingCategory: null }));
+    } catch (err) {
+      message.error(err || "Action failed!");
     }
-
-    setUi((prev) => ({ ...prev, modalOpen: false, editingCategory: null }));
   };
 
   return (
