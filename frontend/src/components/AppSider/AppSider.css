@@ -1,0 +1,8 @@
+.app-sider__container {
+  width: 250px;
+  background-color: #f49d9d;
+}
+
+.app-sider__container .ant-menu {
+  height: 100%;
+}
