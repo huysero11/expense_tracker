@@ -1,0 +1,9 @@
+.profile__page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile__card {
+  min-width: 50%;
+}

@@ -5,6 +5,7 @@ import AppLayout from "./layouts/AppLayout/AppLayout.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
 import CategoriesPage from "./pages/CategoriesPage/CategoriesPage.jsx";
 import TransactionsPage from "./pages/TransactionPage.jsx";
+import ProfilePage from "./pages/ProfilePage/ProfilePage.jsx";
 
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="categories" element={<CategoriesPage />} />
         <Route path="transactions" element={<TransactionsPage />} />
+        <Route path="profile" element={<ProfilePage />} />
       </Route>
 
       {/* fallback */}
