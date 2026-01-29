@@ -8,6 +8,11 @@ const userApi = {
 
     return res;
   },
+  updateMe: async ({ fullName }) => {
+    const res = axiosInstance.patch(`${USER_API_URL}/me`, { fullName });
+
+    return res;
+  },
 };
 
 export default userApi;

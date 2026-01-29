@@ -5,6 +5,9 @@ const initialState = {
   me: null,
   error: false,
   loading: null,
+
+  updating: false,
+  updateError: null,
 };
 
 export const getMeThunk = createAsyncThunk(
@@ -16,6 +19,18 @@ export const getMeThunk = createAsyncThunk(
       return res?.data?.user;
     } catch (err) {
       return rejectWithValue(err || "Fetch user information failed!");
+    }
+  },
+);
+
+export const updateMeThunk = createAsyncThunk(
+  "user/updateMe",
+  async ({ fullName }, { rejectWithValue }) => {
+    try {
+      const res = await userApi.updateMe({ fullName });
+      return res?.data?.updatedUser;
+    } catch (err) {
+      return rejectWithValue(err || "Failed to upate user!");
     }
   },
 );
@@ -46,6 +61,21 @@ const userSlice = createSlice({
       .addCase(getMeThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      });
+
+    // update
+    builder
+      .addCase(updateMeThunk.pending, (state) => {
+        state.updating = true;
+        state.updateError = null;
+      })
+      .addCase(updateMeThunk.fulfilled, (state, action) => {
+        state.updating = false;
+        state.me = action.payload; // IMPORTANT
+      })
+      .addCase(updateMeThunk.rejected, (state, action) => {
+        state.updating = false;
+        state.updateError = action.payload;
       });
   },
 });

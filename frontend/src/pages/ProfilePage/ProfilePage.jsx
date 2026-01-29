@@ -1,10 +1,12 @@
 import { selectUserState } from "../../redux/selectors/userSelector";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useMemo, useState } from "react";
 import { Card, Button, Form, Input, Spin, message, Space } from "antd";
+import { updateMeThunk } from "../../redux/slices/userSlice";
 import "./ProfilePage.css";
 
 const ProfilePage = () => {
+  const dispatch = useDispatch();
   const { me, loading, error } = useSelector(selectUserState);
   const [isEditing, setIsEditing] = useState(false);
   const [form] = Form.useForm();
@@ -32,18 +34,22 @@ const ProfilePage = () => {
 
   const onSave = async () => {
     try {
-      // only validate editable fields
       const values = await form.validateFields(["fullName"]);
-
-      // payload we will send later in update thunk
       const payload = { fullName: values.fullName };
 
-      console.log("[ProfilePage] payload for update thunk =", payload);
+      // console.log("[ProfilePage] payload for update thunk =", payload);
+      const res = await dispatch(updateMeThunk(payload));
 
-      // placeholder until update thunk is implemented
-      message.info("Save clicked — will dispatch update thunk in next case.");
-
-      setIsEditing(false);
+      if (updateMeThunk.fulfilled.match(res)) {
+        message.success("Profile updated");
+        setIsEditing(false);
+        // no need to reset form: slice updates me -> initialValues updates -> setFieldsValue runs
+      } else {
+        message.error(res.payload?.message || "Update failed");
+        // revert UI because update failed
+        form.setFieldsValue(initialValues);
+        setIsEditing(false);
+      }
     } catch {
       // validation failed -> AntD shows errors, do nothing
     }

@@ -31,3 +31,12 @@ export async function createUser({ email, passwordHash, fullName }) {
     fullName,
   };
 }
+
+export async function updateUserById({ id, fullName }) {
+  const sql = `UPDATE users
+                SET full_name = ?
+                WHERE id = ?
+                LIMIT 1`;
+  const [result] = await pool.execute(sql, [fullName, id]);
+  return result.affectedRows === 1;
+}
