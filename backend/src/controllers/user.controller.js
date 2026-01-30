@@ -20,3 +20,20 @@ export async function getMe(req, res, next) {
     next(error);
   }
 }
+
+export async function updateMe(req, res, next) {
+  try {
+    const { fullName } = req.body;
+    const userId = req.user?.userId;
+    if (!userId) throw new AppError("Unauthorized", 401);
+
+    const updatedUser = await userService.updateMe(userId, { fullName });
+    return res.status(200).json({
+      status: "success",
+      message: "Updated user successfully!",
+      data: { updatedUser },
+    });
+  } catch (err) {
+    next(err);
+  }
+}

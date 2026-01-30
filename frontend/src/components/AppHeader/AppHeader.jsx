@@ -2,6 +2,9 @@ import { Dropdown, Layout } from "antd";
 import { ProfileTwoTone } from "@ant-design/icons";
 import { MdLogout } from "react-icons/md";
 import { FaUserCircle } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../redux/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 import "./AppHeader.css";
 
@@ -21,12 +24,27 @@ const user_dropdown_menu = [
 ];
 
 const AppHeader = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const onMenuClick = ({ key }) => {
+    if (key == "logout") {
+      dispatch(logout());
+      navigate("/login");
+      return;
+    }
+
+    if (key == "profile") {
+      navigate("/app/profile");
+    }
+  };
+
   return (
     <Header className="app-header__container">
       <div className="app-header__logo">Logo</div>
       <div className="app-header__user">
         <Dropdown
-          menu={{ items: user_dropdown_menu }}
+          menu={{ items: user_dropdown_menu, onClick: onMenuClick }}
           placement="bottomRight"
           arrow
         >
