@@ -1,0 +1,9 @@
+.transactions-toolbar__container {
+  display: flex;
+  justify-content: space-between;
+  background-color: white;
+}
+
+.transactions-toolbar__create-button {
+  padding: 20px;
+}
