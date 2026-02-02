@@ -16,4 +16,10 @@ router.get(
   transactionsController.getTransactions,
 );
 
+router.put(
+  "/:id",
+  authMiddleware.requireAuth,
+  transactionsController.updateTransaction,
+);
+
 export default router;

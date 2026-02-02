@@ -1,15 +1,33 @@
 import { Modal, Form, Select, InputNumber, DatePicker, Input } from "antd";
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import dayjs from "dayjs";
 
-const TransactionsCreateModal = ({
+const TransactionsModal = ({
   open,
   onCancel,
   onSubmit,
   categories = [],
   loading = false,
+  title = "Create a transaction",
+  okText = "Create",
+  initialValues, // {categoryId, amount, transDate, note}
 }) => {
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    form.setFieldsValue({
+      categoryId: initialValues?.categoryId ?? undefined,
+      amount: initialValues?.amount ?? undefined,
+      transDate: initialValues?.transDate
+        ? dayjs(initialValues.transDate)
+        : dayjs(),
+      note: initialValues?.note ?? undefined,
+    });
+  }, [open, initialValues, form]);
 
   const options = useMemo(() => {
     const expense = categories
@@ -41,10 +59,10 @@ const TransactionsCreateModal = ({
 
   return (
     <Modal
-      title="Create Transaction"
+      title={title}
       open={open}
       onOk={hanldeOk}
-      okText="Create"
+      okText={okText}
       onCancel={() => {
         form.resetFields();
         onCancel();
@@ -88,4 +106,4 @@ const TransactionsCreateModal = ({
   );
 };
 
-export default TransactionsCreateModal;
+export default TransactionsModal;

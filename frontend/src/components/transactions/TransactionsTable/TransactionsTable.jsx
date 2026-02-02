@@ -1,7 +1,12 @@
 import { Table, Button } from "antd";
 import { useMemo } from "react";
 
-const TransactionsTable = ({ transactions = [], categories = [], loading }) => {
+const TransactionsTable = ({
+  transactions = [],
+  categories = [],
+  loading,
+  onEdit,
+}) => {
   //   console.log("[TransactionsTable] transactions = ", transactions);
   //   console.log("[TransactionsTable] categories = ", categories);
 
@@ -39,6 +44,13 @@ const TransactionsTable = ({ transactions = [], categories = [], loading }) => {
       dataIndex: "note",
       key: "note",
       render: (note) => note || "-",
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (_, record) => (
+        <Button onClick={() => onEdit?.(record)}>Edit</Button>
+      ),
     },
   ];
   return (

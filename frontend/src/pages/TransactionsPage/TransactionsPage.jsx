@@ -1,5 +1,5 @@
 import TransactionsToolbar from "../../components/transactions/TransactionsToolbar/TransactionsToolbar";
-import TransactionsCreateModal from "../../components/transactions/TransactionsCreateModal/TransactionsCreateModal";
+import TransactionsModal from "../../components/transactions/TransactionsModal/TransactionsModal";
 import TransactionsTable from "../../components/transactions/TransactionsTable/TransactionsTable";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,6 +12,7 @@ import {
 import {
   createTransactionThunk,
   getTransactionsThunk,
+  updateTransactionThunk,
 } from "../../redux/slices/transactionsSlice";
 import { getCategoriesThunk } from "../../redux/slices/categoriesSlice";
 import { message } from "antd";
@@ -21,6 +22,7 @@ import "./TransactionsPage.css";
 const TransactionsPage = () => {
   const dispatch = useDispatch();
   const [openModal, setOpenModal] = useState(false);
+  const [editing, setEditing] = useState(null); // editing category
 
   const categories = useSelector(selectCategoriesItems);
   const loading = useSelector(selectTransactionsLoading);
@@ -41,21 +43,51 @@ const TransactionsPage = () => {
     }
   };
 
+  const hanldeUpdate = async (payload) => {
+    try {
+      await dispatch(
+        updateTransactionThunk({
+          id: editing.id,
+          ...payload,
+        }),
+      ).unwrap();
+      message.success("Transaction updated!");
+      setEditing(null);
+    } catch (err) {
+      message.error(String(err));
+    }
+  };
+
   return (
     <div className="transactions-page">
       <div className="transactions-page__title">Transactions</div>
       <TransactionsToolbar onCreateClick={() => setOpenModal(true)} />
-      <TransactionsCreateModal
+      {/**Create */}
+      <TransactionsModal
         open={openModal}
         onCancel={() => setOpenModal(false)}
         onSubmit={handleCreate}
         categories={categories}
         loading={loading}
+        title="Create a category"
+        okText="Create"
+      />
+      {/**Edit */}
+      <TransactionsModal
+        open={!!editing}
+        onCancel={() => setEditing(null)}
+        onSubmit={hanldeUpdate}
+        categories={categories}
+        loading={loading}
+        title="Edit a transaction"
+        okText="Save"
+        initialValues={editing}
       />
       <TransactionsTable
         transactions={transactions}
         categories={categories}
         loading={loading}
+        onEdit={(row) => setEditing(row)}
       />
     </div>
   );

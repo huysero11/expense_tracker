@@ -75,3 +75,80 @@ export async function getTransactions({ userId }) {
   const transactions = await transactionModel.getTransactions(userId);
   return transactions;
 }
+
+export async function updateTransaction({
+  userId,
+  id,
+  categoryId,
+  amount,
+  transDate,
+  note,
+}) {
+  if (!userId) {
+    throw new AppError("Unauthorized!", 400);
+  }
+
+  const transactionId = Number(id);
+  if (!transactionId) {
+    throw new AppError("Transaction id is not valid!", 400);
+  }
+
+  const catId = Number(categoryId);
+  if (!catId) {
+    throw new AppError("Category id is not valid", 400);
+  }
+
+  const amt = Number(amount);
+  if (!Number.isFinite(amt) || amt <= 0) {
+    throw new AppError("amount must be a number greater than 0", 400);
+  }
+
+  if (!isValidDateYYYYMMDD(transDate)) {
+    throw new AppError("transDate must be in YYYY-MM-DD format", 400);
+  }
+
+  const normalizedNote =
+    note === null || note === undefined ? null : String(note).trim() || null;
+
+  /**
+   * Check if transaction existed and belong to user
+   */
+  const existing = await transactionModel.getTransactionById(id);
+  if (!existing) {
+    throw new AppError("Transaction does not exist!", 404);
+  }
+  if (Number(existing.userId) !== Number(userId)) {
+    throw new AppError("Transaction id is not the same with userId", 404);
+  }
+
+  /**
+   * Check if category existed and belong to user
+   */
+  const category = await categoryModel.getCategoryById(catId);
+  if (!category) {
+    throw new AppError("Category not found", 404);
+  }
+  if (Number(category.userId) !== Number(userId)) {
+    throw new AppError("Category not found", 404);
+  }
+
+  // type derived from category
+  const type = category.type;
+
+  const ok = await transactionModel.updateTransaction({
+    id: transactionId,
+    userId,
+    categoryId: catId,
+    type,
+    amount: amt,
+    transDate,
+    note: normalizedNote,
+  });
+
+  if (!ok) {
+    throw new AppError("Transaction not found", 404);
+  }
+
+  const updated = await transactionModel.getTransactionById(transactionId);
+  return updated;
+}

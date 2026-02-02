@@ -45,3 +45,46 @@ export async function getTransactions(userId) {
   const [rows] = await pool.execute(sql, [userId]);
   return rows;
 }
+
+export async function getTransactionById(transactionId) {
+  const sql = `SELECT 
+      id,
+      user_id AS userId,
+      category_id AS categoryId,
+      type,
+      amount,
+      DATE_FORMAT(trans_date, '%Y-%m-%d') AS transDate,
+      note,
+      created_at AS createdAt,
+      updated_at AS updatedAt
+    FROM transactions
+    WHERE id = ?
+    LIMIT 1`;
+  const [rows] = await pool.execute(sql, [transactionId]);
+  return rows[0];
+}
+
+export async function updateTransaction({
+  id,
+  userId,
+  categoryId,
+  type,
+  amount,
+  transDate,
+  note,
+}) {
+  const sql = `UPDATE transactions
+                SET category_id = ?, type = ?, amount = ?, trans_date = ?, note = ?
+                WHERE id = ? AND user_id = ?`;
+  const [result] = await pool.execute(sql, [
+    categoryId,
+    type,
+    amount,
+    transDate,
+    note ?? null,
+    id,
+    userId,
+  ]);
+
+  return result.affectedRows > 0;
+}

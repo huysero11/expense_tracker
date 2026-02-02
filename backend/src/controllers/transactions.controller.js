@@ -42,3 +42,27 @@ export async function getTransactions(req, res, next) {
     next(err);
   }
 }
+
+export async function updateTransaction(req, res, next) {
+  try {
+    const userId = req.user?.userId;
+    const id = req.params?.id;
+    const { categoryId, amount, transDate, note } = req.body;
+
+    const updatedTransaction = await transactionsService.updateTransaction({
+      userId,
+      id,
+      categoryId,
+      amount,
+      transDate,
+      note,
+    });
+    return res.status(200).json({
+      status: "success",
+      message: "Update transaction successfully!",
+      data: { updatedTransaction },
+    });
+  } catch (err) {
+    next(err);
+  }
+}

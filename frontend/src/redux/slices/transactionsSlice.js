@@ -36,6 +36,23 @@ export const getTransactionsThunk = createAsyncThunk(
   },
 );
 
+export const updateTransactionThunk = createAsyncThunk(
+  "transactions/update",
+  async ({ id, categoryId, amount, transDate, note }, { rejectWithValue }) => {
+    try {
+      const res = await transactionApi.update(id, {
+        categoryId,
+        amount,
+        transDate,
+        note,
+      });
+      return res.data?.updatedTransaction;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  },
+);
+
 const transactionsSlice = createSlice({
   name: "transactions",
   initialState,
@@ -72,6 +89,33 @@ const transactionsSlice = createSlice({
         state.items = action.payload;
       })
       .addCase(getTransactionsThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    /**
+     * update a transaction
+     */
+    builder
+      .addCase(updateTransactionThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateTransactionThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+
+        const updatedTransaction = action.payload;
+        if (updatedTransaction.id != null) {
+          const idx = state.items.findIndex(
+            (t) => Number(t.id) === Number(updatedTransaction.id),
+          );
+          if (idx != -1) {
+            state.items[idx] = updatedTransaction;
+          }
+        }
+      })
+      .addCase(updateTransactionThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

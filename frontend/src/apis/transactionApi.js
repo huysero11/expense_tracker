@@ -11,6 +11,13 @@ const transactionApi = {
     const res = await axiosInstance.get(TRANSACTION_API_URL);
     return res;
   },
+  update: async (id, payload) => {
+    const res = await axiosInstance.put(
+      `${TRANSACTION_API_URL}/${id}`,
+      payload,
+    );
+    return res;
+  },
 };
 
 export default transactionApi;
