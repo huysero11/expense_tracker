@@ -24,6 +24,18 @@ export const createTransactionThunk = createAsyncThunk(
   },
 );
 
+export const getTransactionsThunk = createAsyncThunk(
+  "transactions/get",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await transactionApi.get();
+      return res.data?.transactions;
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  },
+);
+
 const transactionsSlice = createSlice({
   name: "transactions",
   initialState,
@@ -42,6 +54,24 @@ const transactionsSlice = createSlice({
         state.items.unshift(action.payload);
       })
       .addCase(createTransactionThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    /**
+     * get transactions
+     */
+    builder
+      .addCase(getTransactionsThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getTransactionsThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.items = action.payload;
+      })
+      .addCase(getTransactionsThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -10,4 +10,10 @@ router.post(
   transactionsController.createTransaction,
 );
 
+router.get(
+  "/",
+  authMiddleware.requireAuth,
+  transactionsController.getTransactions,
+);
+
 export default router;

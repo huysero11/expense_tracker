@@ -27,3 +27,18 @@ export async function createTransaction(req, res, next) {
     next(err);
   }
 }
+
+export async function getTransactions(req, res, next) {
+  try {
+    const userId = req.user?.userId;
+    const transactions = await transactionsService.getTransactions({ userId });
+
+    return res.status(200).json({
+      status: "success",
+      message: "Get transactions successfully!",
+      data: { transactions },
+    });
+  } catch (err) {
+    next(err);
+  }
+}

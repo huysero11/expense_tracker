@@ -7,6 +7,10 @@ const transactionApi = {
     const res = await axiosInstance.post(TRANSACTION_API_URL, payload);
     return res;
   },
+  get: async () => {
+    const res = await axiosInstance.get(TRANSACTION_API_URL);
+    return res;
+  },
 };
 
 export default transactionApi;

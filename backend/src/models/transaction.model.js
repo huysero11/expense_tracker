@@ -28,3 +28,20 @@ export async function createTransaction({
     note,
   };
 }
+
+export async function getTransactions(userId) {
+  const sql = `SELECT id, 
+                user_id AS userId, 
+                category_id AS categoryId, 
+                type, 
+                amount, 
+                DATE_FORMAT(trans_date, '%Y-%m-%d') AS transDate,
+                created_at AS createdAt, 
+                updated_at AS updatedAt,
+                note
+              FROM transactions
+              WHERE user_id = ?
+              ORDER BY trans_date DESC, id DESC`;
+  const [rows] = await pool.execute(sql, [userId]);
+  return rows;
+}

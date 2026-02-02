@@ -66,3 +66,12 @@ export async function createTransaction({
 
   return transaction;
 }
+
+export async function getTransactions({ userId }) {
+  if (!userId) {
+    throw new AppError("Unauthorized!", 401);
+  }
+
+  const transactions = await transactionModel.getTransactions(userId);
+  return transactions;
+}

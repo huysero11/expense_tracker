@@ -1,10 +1,19 @@
 import TransactionsToolbar from "../../components/transactions/TransactionsToolbar/TransactionsToolbar";
 import TransactionsCreateModal from "../../components/transactions/TransactionsCreateModal/TransactionsCreateModal";
-import { useState } from "react";
+import TransactionsTable from "../../components/transactions/TransactionsTable/TransactionsTable";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectCategoriesItems } from "../../redux/selectors/categoriesSelector";
-import { selectTransactionsLoading } from "../../redux/selectors/transactionsSelector";
-import { createTransactionThunk } from "../../redux/slices/transactionsSlice";
+
+import {
+  selectTransactionsLoading,
+  selectTransactions,
+} from "../../redux/selectors/transactionsSelector";
+import {
+  createTransactionThunk,
+  getTransactionsThunk,
+} from "../../redux/slices/transactionsSlice";
+import { getCategoriesThunk } from "../../redux/slices/categoriesSlice";
 import { message } from "antd";
 
 import "./TransactionsPage.css";
@@ -15,6 +24,12 @@ const TransactionsPage = () => {
 
   const categories = useSelector(selectCategoriesItems);
   const loading = useSelector(selectTransactionsLoading);
+  const transactions = useSelector(selectTransactions);
+
+  useEffect(() => {
+    dispatch(getCategoriesThunk());
+    dispatch(getTransactionsThunk());
+  }, [dispatch]);
 
   const handleCreate = async (payload) => {
     try {
@@ -34,6 +49,11 @@ const TransactionsPage = () => {
         open={openModal}
         onCancel={() => setOpenModal(false)}
         onSubmit={handleCreate}
+        categories={categories}
+        loading={loading}
+      />
+      <TransactionsTable
+        transactions={transactions}
         categories={categories}
         loading={loading}
       />
