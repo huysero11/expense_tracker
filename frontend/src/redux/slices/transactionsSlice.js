@@ -53,6 +53,18 @@ export const updateTransactionThunk = createAsyncThunk(
   },
 );
 
+export const deleteTransactionThunk = createAsyncThunk(
+  "transactions/delete",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await transactionApi.delete(id);
+      return { res, id };
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  },
+);
+
 const transactionsSlice = createSlice({
   name: "transactions",
   initialState,
@@ -116,6 +128,28 @@ const transactionsSlice = createSlice({
         }
       })
       .addCase(updateTransactionThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
+
+    /**
+     * Delete a transaction
+     */
+    builder
+      .addCase(deleteTransactionThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteTransactionThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+
+        const id = action.payload?.id;
+        if (id) {
+          state.items = state.items.filter((t) => Number(t.id) !== Number(id));
+        }
+      })
+      .addCase(deleteTransactionThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

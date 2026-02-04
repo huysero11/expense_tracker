@@ -66,3 +66,19 @@ export async function updateTransaction(req, res, next) {
     next(err);
   }
 }
+
+export async function deleteTransaction(req, res, next) {
+  try {
+    const userId = req.user?.userId;
+    const id = req.params?.id;
+
+    await transactionsService.deleteTransaction({ id, userId });
+    return res.status(200).json({
+      status: "success",
+      message: "Delete transaction successfully!",
+      data: { deleted: true },
+    });
+  } catch (err) {
+    next(err);
+  }
+}

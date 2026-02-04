@@ -13,6 +13,7 @@ import {
   createTransactionThunk,
   getTransactionsThunk,
   updateTransactionThunk,
+  deleteTransactionThunk,
 } from "../../redux/slices/transactionsSlice";
 import { getCategoriesThunk } from "../../redux/slices/categoriesSlice";
 import { message } from "antd";
@@ -58,6 +59,15 @@ const TransactionsPage = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    try {
+      await dispatch(deleteTransactionThunk(id)).unwrap();
+      message.success("Transaction deleted");
+    } catch (err) {
+      message.error(String(err));
+    }
+  };
+
   return (
     <div className="transactions-page">
       <div className="transactions-page__title">Transactions</div>
@@ -69,7 +79,7 @@ const TransactionsPage = () => {
         onSubmit={handleCreate}
         categories={categories}
         loading={loading}
-        title="Create a category"
+        title="Create a transaction"
         okText="Create"
       />
       {/**Edit */}
@@ -88,6 +98,7 @@ const TransactionsPage = () => {
         categories={categories}
         loading={loading}
         onEdit={(row) => setEditing(row)}
+        onDelete={handleDelete}
       />
     </div>
   );

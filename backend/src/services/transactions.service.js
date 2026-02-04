@@ -152,3 +152,34 @@ export async function updateTransaction({
   const updated = await transactionModel.getTransactionById(transactionId);
   return updated;
 }
+
+export async function deleteTransaction({ id, userId }) {
+  if (!userId) {
+    throw new AppError("Unauthorized!", 401);
+  }
+
+  const transactionId = Number(id);
+  if (!transactionId) {
+    throw new AppError("Transaction id is invalid", 400);
+  }
+
+  // check exists + belongs to user
+  const existing = await transactionModel.getTransactionById(transactionId);
+  if (!existing) {
+    throw new AppError("Transaction not found", 404);
+  }
+  if (Number(existing.userId) !== Number(userId)) {
+    throw new AppError("Transaction not found", 404);
+  }
+
+  const ok = await transactionModel.deleteTransaction({
+    id: transactionId,
+    userId,
+  });
+
+  if (!ok) {
+    throw new AppError("Transaction not found", 404);
+  }
+
+  return true;
+}

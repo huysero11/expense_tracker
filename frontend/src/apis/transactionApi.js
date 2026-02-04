@@ -18,6 +18,10 @@ const transactionApi = {
     );
     return res;
   },
+  delete: async (id) => {
+    const res = await axiosInstance.delete(`${TRANSACTION_API_URL}/${id}`);
+    return res;
+  },
 };
 
 export default transactionApi;

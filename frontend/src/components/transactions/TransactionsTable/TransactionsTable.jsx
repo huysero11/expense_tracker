@@ -1,4 +1,4 @@
-import { Table, Button } from "antd";
+import { Table, Button, Space, Popconfirm } from "antd";
 import { useMemo } from "react";
 
 const TransactionsTable = ({
@@ -6,6 +6,7 @@ const TransactionsTable = ({
   categories = [],
   loading,
   onEdit,
+  onDelete,
 }) => {
   //   console.log("[TransactionsTable] transactions = ", transactions);
   //   console.log("[TransactionsTable] categories = ", categories);
@@ -49,7 +50,17 @@ const TransactionsTable = ({
       title: "Actions",
       key: "actions",
       render: (_, record) => (
-        <Button onClick={() => onEdit?.(record)}>Edit</Button>
+        <Space>
+          <Button onClick={() => onEdit?.(record)}>Edit</Button>
+          <Popconfirm
+            title="Delete this transaction?"
+            okText="Delete"
+            cancelText="Cancel"
+            onConfirm={() => onDelete(record.id)}
+          >
+            <Button danger> Delete </Button>
+          </Popconfirm>
+        </Space>
       ),
     },
   ];

@@ -88,3 +88,10 @@ export async function updateTransaction({
 
   return result.affectedRows > 0;
 }
+
+export async function deleteTransaction({ id, userId }) {
+  const sql = `DELETE FROM transactions
+              WHERE id = ? AND user_id = ?`;
+  const [result] = await pool.execute(sql, [id, userId]);
+  return result.affectedRows > 0;
+}

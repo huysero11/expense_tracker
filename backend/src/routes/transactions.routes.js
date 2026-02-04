@@ -22,4 +22,10 @@ router.put(
   transactionsController.updateTransaction,
 );
 
+router.delete(
+  "/:id",
+  authMiddleware.requireAuth,
+  transactionsController.deleteTransaction,
+);
+
 export default router;
