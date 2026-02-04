@@ -48,7 +48,18 @@ export async function rotateRefreshToken(oldRefreshToken) {
   /* rotate */
   const newRefreshToken = signRefreshToken(userId);
   const newHash = sha256(newRefreshToken);
-  await refreshTokenModel.rotate({ oldHash, newHash });
+
+  const affected = await refreshTokenModel.rotate({ oldHash, newHash });
+  if (!affected) {
+    throw new AppError("Refresh token is invalid or expired", 401);
+  }
+
+  const expiresAt = computeRefreshExpiresAt();
+  await refreshTokenModel.createRefreshToken({
+    userId,
+    tokenHash: newHash,
+    expiresAt,
+  });
 
   return { userId, newRefreshToken };
 }
