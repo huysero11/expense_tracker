@@ -2,9 +2,9 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import RegisterForm from "./components/RegisterForm/RegisterForm.jsx";
 import LoginForm from "./components/LoginForm/LoginForm.jsx";
 import AppLayout from "./layouts/AppLayout/AppLayout.jsx";
-import DashboardPage from "./pages/DashboardPage.jsx";
+import DashboardPage from "./pages/DashboardPage/DashboardPage.jsx";
 import CategoriesPage from "./pages/CategoriesPage/CategoriesPage.jsx";
-import TransactionsPage from "./pages/TransactionPage.jsx";
+import TransactionsPage from "./pages/TransactionsPage/TransactionsPage.jsx";
 import ProfilePage from "./pages/ProfilePage/ProfilePage.jsx";
 
 const App = () => {

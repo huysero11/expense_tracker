@@ -1,0 +1,9 @@
+.transactions-page {
+  box-sizing: border-box;
+  padding: var(--padding-1);
+}
+
+.transactions-page__title {
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+}

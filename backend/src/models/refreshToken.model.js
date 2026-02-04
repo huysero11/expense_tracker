@@ -23,8 +23,13 @@ export async function findValidByHash(tokenHash) {
 export async function rotate({ oldHash, newHash }) {
   const sql = `UPDATE refresh_tokens 
         SET revoked_at = NOW(), replaced_by_hash = ?
-        WHERE token_hash = ? AND revoked_at IS NULL`;
-  await pool.execute(sql, [newHash, oldHash]);
+        WHERE token_hash = ? 
+          AND revoked_at IS NULL
+          AND expires_at > NOW()`;
+
+  const [result] = await pool.execute(sql, [newHash, oldHash]);
+
+  return result.affectedRows;
 }
 
 export async function revokeByHash(tokenHash) {
